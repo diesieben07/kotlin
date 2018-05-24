@@ -33,7 +33,7 @@ import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.symbols.impl.IrFieldSymbolImpl
 import org.jetbrains.kotlin.ir.symbols.impl.IrSimpleFunctionSymbolImpl
-import org.jetbrains.kotlin.ir.util.createParameterDeclarations
+//import org.jetbrains.kotlin.ir.util.createParameterDeclarations
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.KotlinType
 
@@ -89,7 +89,7 @@ fun BackendContext.createPropertyGetterBuilder(startOffset: Int, endOffset: Int,
         }
     }
 
-    override fun buildIr() = IrFunctionImpl(
+    override fun buildIr() = TODO() /*IrFunctionImpl(
             startOffset = startOffset,
             endOffset   = endOffset,
             origin      = origin,
@@ -100,7 +100,7 @@ fun BackendContext.createPropertyGetterBuilder(startOffset: Int, endOffset: Int,
         body = createIrBuilder(this.symbol, startOffset, endOffset).irBlockBody {
             +irReturn(irGetField(irGet(this@apply.dispatchReceiverParameter!!.symbol), fieldSymbol))
         }
-    }
+    }*/
 }
 
 private fun BackendContext.createPropertySetterBuilder(startOffset: Int, endOffset: Int, origin: IrDeclarationOrigin,
@@ -145,7 +145,7 @@ private fun BackendContext.createPropertySetterBuilder(startOffset: Int, endOffs
         }
     }
 
-    override fun buildIr() = IrFunctionImpl(
+    override fun buildIr() = TODO() /* IrFunctionImpl(
             startOffset = startOffset,
             endOffset   = endOffset,
             origin      = origin,
@@ -156,7 +156,7 @@ private fun BackendContext.createPropertySetterBuilder(startOffset: Int, endOffs
         body = createIrBuilder(this.symbol, startOffset, endOffset).irBlockBody {
             +irSetField(irGet(this@apply.dispatchReceiverParameter!!.symbol), fieldSymbol, irGet(this@apply.valueParameters.single().symbol))
         }
-    }
+    } */
 }
 
 fun BackendContext.createPropertyWithBackingFieldBuilder(startOffset: Int, endOffset: Int, origin: IrDeclarationOrigin,
@@ -198,19 +198,20 @@ fun BackendContext.createPropertyWithBackingFieldBuilder(startOffset: Int, endOf
     }
 
     override fun buildIr(): IrProperty {
-        val backingField = IrFieldImpl(
-                startOffset = startOffset,
-                endOffset   = endOffset,
-                origin      = origin,
-                symbol      = symbol)
-        return IrPropertyImpl(
-                startOffset  = startOffset,
-                endOffset    = endOffset,
-                origin       = origin,
-                isDelegated  = false,
-                descriptor   = symbol.descriptor,
-                backingField = backingField,
-                getter       = getterBuilder.ir,
-                setter       = setterBuilder?.ir)
+        TODO()
+//        val backingField = IrFieldImpl(
+//                startOffset = startOffset,
+//                endOffset   = endOffset,
+//                origin      = origin,
+//                symbol      = symbol)
+//        return IrPropertyImpl(
+//                startOffset  = startOffset,
+//                endOffset    = endOffset,
+//                origin       = origin,
+//                isDelegated  = false,
+//                descriptor   = symbol.descriptor,
+//                backingField = backingField,
+//                getter       = getterBuilder.ir,
+//                setter       = setterBuilder?.ir)
     }
 }
