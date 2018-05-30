@@ -54,12 +54,32 @@ class IrTypeParameterImpl(
             )
 
     constructor(
+            startOffset: Int,
+            endOffset: Int,
+            origin: IrDeclarationOrigin,
+            symbol: IrTypeParameterSymbol,
+            superTypes: List<IrType>
+    ) : this(startOffset, endOffset, origin, symbol) {
+        this.superTypes += superTypes
+    }
+
+    constructor(
         startOffset: Int,
         endOffset: Int,
         origin: IrDeclarationOrigin,
         descriptor: TypeParameterDescriptor
     ) :
             this(startOffset, endOffset, origin, IrTypeParameterSymbolImpl(descriptor))
+
+    constructor(
+            startOffset: Int,
+            endOffset: Int,
+            origin: IrDeclarationOrigin,
+            descriptor: TypeParameterDescriptor,
+            superTypes: List<IrType>
+    ) : this(startOffset, endOffset, origin, descriptor) {
+        this.superTypes += superTypes
+    }
 
     init {
         symbol.bind(this)

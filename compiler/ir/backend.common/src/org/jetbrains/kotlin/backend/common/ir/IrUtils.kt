@@ -26,6 +26,8 @@ import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrConstructor
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.impl.IrConstructorImpl
+import org.jetbrains.kotlin.ir.declarations.impl.IrValueParameterImpl
+import org.jetbrains.kotlin.ir.descriptors.IrBuiltIns
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.*
 import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
@@ -78,53 +80,61 @@ fun FunctionDescriptor.createOverriddenDescriptor(owner: ClassDescriptor, final:
     }
 }
 
-fun ClassDescriptor.createSimpleDelegatingConstructorDescriptor(
-    superConstructorDescriptor: ClassConstructorDescriptor,
-    isPrimary: Boolean = false
-)
-        : ClassConstructorDescriptor {
-    val constructorDescriptor = ClassConstructorDescriptorImpl.createSynthesized(
-        /* containingDeclaration = */ this,
-        /* annotations           = */ Annotations.EMPTY,
-        /* isPrimary             = */ isPrimary,
-        /* source                = */ SourceElement.NO_SOURCE
-    )
-    val valueParameters = superConstructorDescriptor.valueParameters.map {
-        it.copy(constructorDescriptor, it.name, it.index)
-    }
-    constructorDescriptor.initialize(valueParameters, superConstructorDescriptor.visibility)
-    constructorDescriptor.returnType = superConstructorDescriptor.returnType
-    return constructorDescriptor
-}
-
 fun IrClass.addSimpleDelegatingConstructor(
-    superConstructorSymbol: IrConstructorSymbol,
-    constructorDescriptor: ClassConstructorDescriptor,
-    origin: IrDeclarationOrigin
-)
-        : IrConstructor {
+        superConstructor: IrConstructor,
+        irBuiltIns: IrBuiltIns,
+        isPrimary: Boolean = false
+): IrConstructor {
+    val superConstructorDescriptor = superConstructor.descriptor
+    val constructorDescriptor = ClassConstructorDescriptorImpl.createSynthesized(
+            /* containingDeclaration = */ this.descriptor,
+            /* annotations           = */ Annotations.EMPTY,
+            /* isPrimary             = */ isPrimary,
+            /* source                = */ SourceElement.NO_SOURCE
+    )
+    val valueParameters = superConstructor.valueParameters.map {
+        val descriptor = it.descriptor as ValueParameterDescriptor
+        val newDescriptor = descriptor.copy(constructorDescriptor, descriptor.name, descriptor.index)
+        IrValueParameterImpl(
+                startOffset,
+                endOffset,
+                IrDeclarationOrigin.DEFINED,
+                newDescriptor,
+                it.type,
+                it.varargElementType
+        )
+    }
 
-    TODO()
 
-//    return IrConstructorImpl(startOffset, endOffset, origin, constructorDescriptor).also { constructor ->
-//        constructor.createParameterDeclarations()
-//
-//        constructor.body = IrBlockBodyImpl(
-//            startOffset, endOffset,
-//            listOf(
-//                IrDelegatingConstructorCallImpl(
-//                    startOffset, endOffset,
-//                    superConstructorSymbol, superConstructorSymbol.descriptor
-//                ).apply {
-//                    constructor.valueParameters.forEachIndexed { idx, parameter ->
-//                        putValueArgument(idx, IrGetValueImpl(startOffset, endOffset, parameter.symbol))
-//                    }
-//                },
-//                IrInstanceInitializerCallImpl(startOffset, endOffset, this.symbol)
-//            )
-//        )
-//
-//        constructor.parent = this
-//        this.declarations.add(constructor)
-//    }
+    constructorDescriptor.initialize(
+            valueParameters.map { it.descriptor as ValueParameterDescriptor },
+            superConstructorDescriptor.visibility
+    )
+    constructorDescriptor.returnType = superConstructorDescriptor.returnType
+
+    return IrConstructorImpl(startOffset, endOffset, origin, constructorDescriptor).also { constructor ->
+
+        assert(superConstructor.dispatchReceiverParameter == null) // Inner classes aren't supported.
+
+        constructor.valueParameters += valueParameters
+
+        constructor.returnType = superConstructor.returnType
+        constructor.body = IrBlockBodyImpl(
+                startOffset, endOffset,
+                listOf(
+                        IrDelegatingConstructorCallImpl(
+                                startOffset, endOffset, irBuiltIns.unitType,
+                                superConstructor.symbol, superConstructor.descriptor
+                        ).apply {
+                            constructor.valueParameters.forEachIndexed { idx, parameter ->
+                                putValueArgument(idx, IrGetValueImpl(startOffset, endOffset, parameter.type, parameter.symbol))
+                            }
+                        },
+                        IrInstanceInitializerCallImpl(startOffset, endOffset, this.symbol, irBuiltIns.unitType)
+                )
+        )
+
+        constructor.parent = this
+        this.declarations.add(constructor)
+    }
 }

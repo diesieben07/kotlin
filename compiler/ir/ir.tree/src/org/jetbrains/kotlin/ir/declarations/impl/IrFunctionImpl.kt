@@ -62,6 +62,28 @@ class IrFunctionImpl(
         symbol.descriptor.isSuspend
     )
 
+    constructor(
+            startOffset: Int,
+            endOffset: Int,
+            origin: IrDeclarationOrigin,
+            symbol: IrSimpleFunctionSymbol,
+            returnType: IrType
+    ) : this(startOffset, endOffset, origin, symbol) {
+        this.returnType = returnType
+    }
+
+    constructor(
+            startOffset: Int,
+            endOffset: Int,
+            origin: IrDeclarationOrigin,
+            descriptor: FunctionDescriptor,
+            returnType: IrType,
+            body: IrBody?
+    ) : this(startOffset, endOffset, origin, descriptor) {
+        this.returnType = returnType
+        this.body = body
+    }
+
     override val descriptor: FunctionDescriptor = symbol.descriptor
 
     override val overriddenSymbols: MutableList<IrSimpleFunctionSymbol> = SmartList()
@@ -86,6 +108,16 @@ class IrFunctionImpl(
         body: IrBody?
     ) : this(startOffset, endOffset, origin, descriptor) {
         this.body = body
+    }
+
+    constructor(
+            startOffset: Int,
+            endOffset: Int,
+            origin: IrDeclarationOrigin,
+            descriptor: FunctionDescriptor,
+            returnType: IrType
+    ) : this(startOffset, endOffset, origin, descriptor) {
+        this.returnType = returnType
     }
 
     init {
