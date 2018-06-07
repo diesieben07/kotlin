@@ -29,8 +29,7 @@ import org.jetbrains.kotlin.idea.refactoring.introduce.extractFunction.ui.Kotlin
 import org.jetbrains.kotlin.idea.refactoring.introduce.extractionEngine.*
 import org.jetbrains.kotlin.idea.refactoring.introduce.selectElementsWithTargetSibling
 import org.jetbrains.kotlin.idea.util.psi.patternMatching.toRange
-import org.jetbrains.kotlin.psi.KtBlockExpression
-import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.*
 
 class ExtractKotlinFunctionHandler(
         private val allContainersEnabled: Boolean = false,
@@ -62,6 +61,15 @@ class ExtractKotlinFunctionHandler(
         }
     }
 
+    fun validateElements(elements: List<PsiElement>): String? {
+        if (elements.any {
+                    it is KtDeclaration && !(it is KtProperty || it is KtNamedFunction || it is KtClassOrObject) && !KtPsiUtil.isLocal(it)
+                }) {
+            return "Extractable code fragment may not contain non-local declarations"
+        }
+        return null
+    }
+
     fun selectElements(editor: Editor, file: KtFile, continuation: (elements: List<PsiElement>, targetSibling: PsiElement) -> Unit) {
         selectElementsWithTargetSibling(
                 EXTRACT_FUNCTION,
@@ -69,6 +77,7 @@ class ExtractKotlinFunctionHandler(
                 file,
                 "Select target code block",
                 listOf(CodeInsightUtils.ElementKind.EXPRESSION),
+                this::validateElements,
                 { elements, parent -> parent.getExtractionContainers(elements.size == 1, allContainersEnabled) },
                 continuation
         )
