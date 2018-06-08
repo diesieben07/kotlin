@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.ir.IrElement
+import org.jetbrains.kotlin.ir.backend.js.utils.OperatorNames
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
@@ -28,7 +29,6 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
 import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.kotlin.util.OperatorNameConventions
 
 class JsIrBackendContext(
     val module: ModuleDescriptor,
@@ -106,30 +106,13 @@ class JsIrBackendContext(
         override fun shouldGenerateHandlerParameterForDefaultBodyFun() = true
     }
 
-    private fun referenceOperators(): Map<Name, Map<KotlinType, IrFunctionSymbol>> {
-        val operatorNames = setOf(
-            OperatorNameConventions.PLUS,
-            OperatorNameConventions.MINUS,
-            OperatorNameConventions.TIMES,
-            OperatorNameConventions.DIV,
-            OperatorNameConventions.MOD,
-            OperatorNameConventions.AND,
-            OperatorNameConventions.OR,
-            Name.identifier("xor"),
-            Name.identifier("shl"),
-            Name.identifier("shr"),
-            Name.identifier("shru"),
-            OperatorNameConventions.NOT
-        )
-
-        return operatorNames.map { name ->
-            name to irBuiltIns.primitiveTypes.fold(mutableMapOf<KotlinType, IrFunctionSymbol>()) { m, t ->
-                val function = t.memberScope.getContributedFunctions(name, NoLookupLocation.FROM_BACKEND).singleOrNull()
-                function?.let { m.put(t, symbolTable.referenceSimpleFunction(it)) }
-                m
-            }
-        }.toMap()
-    }
+    private fun referenceOperators() = OperatorNames.ALL.map { name ->
+        name to irBuiltIns.primitiveTypes.fold(mutableMapOf<KotlinType, IrFunctionSymbol>()) { m, t ->
+            val function = t.memberScope.getContributedFunctions(name, NoLookupLocation.FROM_BACKEND).singleOrNull()
+            function?.let { m.put(t, symbolTable.referenceSimpleFunction(it)) }
+            m
+        }
+    }.toMap()
 
     private fun findClass(memberScope: MemberScope, className: String) = findClass(memberScope, Name.identifier(className))
 

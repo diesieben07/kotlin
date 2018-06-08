@@ -6,67 +6,37 @@
 package org.jetbrains.kotlin.ir.backend.js.ir
 
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
+import org.jetbrains.kotlin.ir.backend.js.utils.OperatorNames
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.kotlin.util.OperatorNameConventions
 
 class JsIrArithBuilder(val context: JsIrBackendContext) {
 
     val symbols = context.ir.symbols
 
-    private fun buildBinaryOperator(name: Name, l: IrExpression, r: IrExpression, type: KotlinType?): IrExpression {
-        val symbol = context.getOperatorByName(name, type ?: l.type)!!
+    private fun buildBinaryOperator(name: Name, l: IrExpression, r: IrExpression): IrExpression {
+        val symbol = context.getOperatorByName(name, l.type)!!
         return JsIrBuilder.buildCall(symbol).apply {
             dispatchReceiver = l
             putValueArgument(0, r)
         }
     }
 
-    private fun buildUnaryOperator(name: Name, v: IrExpression, type: KotlinType): IrExpression {
-        val symbol = context.getOperatorByName(name, type)!!
+    private fun buildUnaryOperator(name: Name, v: IrExpression): IrExpression {
+        val symbol = context.getOperatorByName(name, v.type)!!
         return JsIrBuilder.buildCall(symbol).apply { dispatchReceiver = v }
     }
 
-    fun add(l: IrExpression, r: IrExpression, type: KotlinType? = null): IrExpression =
-        buildBinaryOperator(OperatorNameConventions.PLUS, l, r, type)
-
-    fun sub(l: IrExpression, r: IrExpression, type: KotlinType? = null): IrExpression =
-        buildBinaryOperator(OperatorNameConventions.MINUS, l, r, type)
-
-    fun mul(l: IrExpression, r: IrExpression, type: KotlinType? = null): IrExpression =
-        buildBinaryOperator(OperatorNameConventions.TIMES, l, r, type)
-
-    fun div(l: IrExpression, r: IrExpression, type: KotlinType? = null): IrExpression =
-        buildBinaryOperator(OperatorNameConventions.DIV, l, r, type)
-
-    fun mod(l: IrExpression, r: IrExpression, type: KotlinType? = null): IrExpression =
-        buildBinaryOperator(OperatorNameConventions.MOD, l, r, type)
-
-    fun bitAnd(l: IrExpression, r: IrExpression, type: KotlinType? = null): IrExpression =
-        buildBinaryOperator(OperatorNameConventions.AND, l, r, type)
-
-    fun bitOr(l: IrExpression, r: IrExpression, type: KotlinType? = null): IrExpression =
-        buildBinaryOperator(OperatorNameConventions.OR, l, r, type)
-
-    fun bitXor(l: IrExpression, r: IrExpression, type: KotlinType? = null): IrExpression =
-        buildBinaryOperator(Name.identifier("xor"), l, r, type)
-
-    fun and(l: IrExpression, r: IrExpression, type: KotlinType? = null): IrExpression =
-        buildBinaryOperator(OperatorNameConventions.AND, l, r, type)
-
-    fun or(l: IrExpression, r: IrExpression, type: KotlinType? = null): IrExpression =
-        buildBinaryOperator(OperatorNameConventions.OR, l, r, type)
-
-    fun shl(l: IrExpression, r: IrExpression, type: KotlinType? = null): IrExpression =
-        buildBinaryOperator(Name.identifier("shl"), l, r, type)
-
-    fun shr(l: IrExpression, r: IrExpression, type: KotlinType? = null): IrExpression =
-        buildBinaryOperator(Name.identifier("shr"), l, r, type)
-
-    fun shru(l: IrExpression, r: IrExpression, type: KotlinType? = null): IrExpression =
-        buildBinaryOperator(Name.identifier("shru"), l, r, type)
-
-    fun not(v: IrExpression): IrExpression = buildUnaryOperator(OperatorNameConventions.NOT, v, context.builtIns.booleanType)
-    fun neg(v: IrExpression): IrExpression = buildUnaryOperator(OperatorNameConventions.NOT, v, v.type)
+    fun add(l: IrExpression, r: IrExpression) = buildBinaryOperator(OperatorNames.ADD, l, r)
+    fun sub(l: IrExpression, r: IrExpression) = buildBinaryOperator(OperatorNames.SUB, l, r)
+    fun mul(l: IrExpression, r: IrExpression) = buildBinaryOperator(OperatorNames.MUL, l, r)
+    fun div(l: IrExpression, r: IrExpression) = buildBinaryOperator(OperatorNames.DIV, l, r)
+    fun mod(l: IrExpression, r: IrExpression) = buildBinaryOperator(OperatorNames.MOD, l, r)
+    fun and(l: IrExpression, r: IrExpression) = buildBinaryOperator(OperatorNames.AND, l, r)
+    fun or(l: IrExpression, r: IrExpression) = buildBinaryOperator(OperatorNames.OR, l, r)
+    fun shl(l: IrExpression, r: IrExpression) = buildBinaryOperator(OperatorNames.SHL, l, r)
+    fun shr(l: IrExpression, r: IrExpression) = buildBinaryOperator(OperatorNames.SHR, l, r)
+    fun shru(l: IrExpression, r: IrExpression) = buildBinaryOperator(OperatorNames.SHRU, l, r)
+    fun not(v: IrExpression): IrExpression = buildUnaryOperator(OperatorNames.NOT, v)
+    fun inv(v: IrExpression): IrExpression = buildUnaryOperator(OperatorNames.INV, v)
 }

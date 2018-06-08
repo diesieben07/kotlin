@@ -258,7 +258,7 @@ class TypeOperatorLowering(val context: JsIrBackendContext) : FunctionLoweringPa
                 val toType = expression.typeOperand
 
                 fun maskOp(arg: IrExpression, mask: IrExpression, shift: IrExpression) = calculator.run {
-                    shr(shl(bitAnd(arg, mask), shift), shift, toType)
+                    shr(shl(and(arg, mask), shift), shift)
                 }
 
                 val newStatements = mutableListOf<IrStatement>()
