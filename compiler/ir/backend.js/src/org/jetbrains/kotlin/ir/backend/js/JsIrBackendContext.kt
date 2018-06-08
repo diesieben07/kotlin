@@ -52,7 +52,6 @@ class JsIrBackendContext(
 
     val intrinsics = JsIntrinsics(module, irBuiltIns, this)
 
-    //    val notOperator = symbolTable.referenceSimpleFunction(irBuiltIns.bool.memberScope.getContributedFunctions(OperatorNameConventions.NOT, NoLookupLocation.FROM_BACKEND).single())
     private val operatorMap = referenceOperators()
 
     data class SecondaryCtorPair(val delegate: IrSimpleFunctionSymbol, val stub: IrSimpleFunctionSymbol)
