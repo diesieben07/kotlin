@@ -168,8 +168,8 @@ class TypeOperatorLowering(val context: JsIrBackendContext) : FunctionLoweringPa
 
                 return when {
                     !isFromNullable -> instanceCheck // ! -> *
-                    isToNullable -> calculator.run { or(nullCheck(argument), instanceCheck) } // * -> ?
-                    else -> if (isNativeCheck) instanceCheck else calculator.run { and(not(nullCheck(argument)), instanceCheck) } // ? -> !
+                    isToNullable -> calculator.run { oror(nullCheck(argument), instanceCheck) } // * -> ?
+                    else -> if (isNativeCheck) instanceCheck else calculator.run { andand(not(nullCheck(argument)), instanceCheck) } // ? -> !
                 }
             }
 
