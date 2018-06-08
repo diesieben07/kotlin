@@ -22515,6 +22515,11 @@ public class DiagnosticsUsingJavacTestGenerated extends AbstractDiagnosticsUsing
                     runTest("compiler/testData/diagnostics/tests/when/withSubjectVariable/smartcastToEnum.kt");
                 }
 
+                @TestMetadata("softModifierName.kt")
+                public void testSoftModifierName() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/when/withSubjectVariable/softModifierName.kt");
+                }
+
                 @TestMetadata("subjectVariableInIsPattern.kt")
                 public void testSubjectVariableInIsPattern() throws Exception {
                     runTest("compiler/testData/diagnostics/tests/when/withSubjectVariable/subjectVariableInIsPattern.kt");
