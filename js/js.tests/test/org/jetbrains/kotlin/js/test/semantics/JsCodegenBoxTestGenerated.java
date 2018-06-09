@@ -19544,6 +19544,11 @@ public class JsCodegenBoxTestGenerated extends AbstractJsCodegenBoxTest {
                 runTest("compiler/testData/codegen/box/when/whenSubjectVariable/captureSubjectVariable.kt");
             }
 
+            @TestMetadata("denseIntSwitchWithSubjectVariable.kt")
+            public void testDenseIntSwitchWithSubjectVariable() throws Exception {
+                runTest("compiler/testData/codegen/box/when/whenSubjectVariable/denseIntSwitchWithSubjectVariable.kt");
+            }
+
             @TestMetadata("equalityWithSubjectVariable.kt")
             public void testEqualityWithSubjectVariable() throws Exception {
                 runTest("compiler/testData/codegen/box/when/whenSubjectVariable/equalityWithSubjectVariable.kt");
@@ -19564,9 +19569,29 @@ public class JsCodegenBoxTestGenerated extends AbstractJsCodegenBoxTest {
                 runTest("compiler/testData/codegen/box/when/whenSubjectVariable/isCheckOnSubjectVariable.kt");
             }
 
+            @TestMetadata("possiblyOptimizedEnumWhen.kt")
+            public void testPossiblyOptimizedEnumWhen() throws Exception {
+                runTest("compiler/testData/codegen/box/when/whenSubjectVariable/possiblyOptimizedEnumWhen.kt");
+            }
+
+            @TestMetadata("possiblyOptimizedNullableEnumWhen.kt")
+            public void testPossiblyOptimizedNullableEnumWhen() throws Exception {
+                runTest("compiler/testData/codegen/box/when/whenSubjectVariable/possiblyOptimizedNullableEnumWhen.kt");
+            }
+
+            @TestMetadata("possiblyOptimizedStringWhen.kt")
+            public void testPossiblyOptimizedStringWhen() throws Exception {
+                runTest("compiler/testData/codegen/box/when/whenSubjectVariable/possiblyOptimizedStringWhen.kt");
+            }
+
             @TestMetadata("rangeCheckOnSubjectVariable.kt")
             public void testRangeCheckOnSubjectVariable() throws Exception {
                 runTest("compiler/testData/codegen/box/when/whenSubjectVariable/rangeCheckOnSubjectVariable.kt");
+            }
+
+            @TestMetadata("sparseIntSwitchWithSubjectVariable.kt")
+            public void testSparseIntSwitchWithSubjectVariable() throws Exception {
+                runTest("compiler/testData/codegen/box/when/whenSubjectVariable/sparseIntSwitchWithSubjectVariable.kt");
             }
         }
     }

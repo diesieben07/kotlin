@@ -68,15 +68,8 @@ public class StringSwitchCodegen extends SwitchCodegen {
     }
 
     @Override
-    protected void generateSubject() {
-        tempVarIndex = codegen.myFrameMap.enterTemp(subjectType);
-        super.generateSubject();
-        v.store(tempVarIndex, subjectType);
-
-        v.load(tempVarIndex, subjectType);
-
+    protected void generateSubjectValueToIndex() {
         generateNullCheckIfNeeded();
-
         v.invokevirtual(
                 subjectType.getInternalName(),
                 "hashCode", HASH_CODE_METHOD_DESC, false
