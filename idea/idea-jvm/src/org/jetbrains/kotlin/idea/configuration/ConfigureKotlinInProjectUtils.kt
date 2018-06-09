@@ -214,7 +214,7 @@ fun getConfigurationPossibilitiesForConfigureNotification(
 
     // We need to return all modules for which at least one configurator is applicable, as well as all configurators which
     // are applicable for at least one module. At the same time we want to call getStatus() only once for each module/configurator pair.
-    for (moduleSourceRootGroup in modulesWithKotlinFiles) {
+    for (moduleSourceRootGroup in modulesWithKotlinFiles.exclude(excludeModules)) {
         var moduleCanBeConfigured = false
         var moduleAlreadyConfigured = false
         for (configurator in configurators) {
