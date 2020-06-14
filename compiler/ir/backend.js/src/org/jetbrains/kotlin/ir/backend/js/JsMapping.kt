@@ -27,6 +27,7 @@ class JsMapping : DefaultMapping() {
     val enumClassToCorrespondingEnumEntry = newMapping<IrClass, IrEnumEntry>()
     val enumConstructorOldToNewValueParameters = newMapping<IrValueDeclaration, IrValueParameter>()
     val enumEntryToCorrespondingField = newMapping<IrEnumEntry, IrField>()
+    val enumInstanceFieldToEntry = newMapping<IrField, IrEnumEntry>()
     val enumClassToInitEntryInstancesFun = newMapping<IrClass, IrSimpleFunction>()
 
     // Triggers `StageController.lazyLower` on access

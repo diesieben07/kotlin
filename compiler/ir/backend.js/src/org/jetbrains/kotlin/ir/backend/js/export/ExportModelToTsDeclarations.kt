@@ -45,14 +45,18 @@ fun ExportedDeclaration.toTypeScript(indent: String): String = indent + when (th
         "$keyword$name$renderedTypeParameters($renderedParameters): $renderedReturnType"
     }
     is ExportedConstructor ->
-        "constructor(${parameters.joinToString(", ") { it.toTypeScript() }})"
+        (if (isPrivate) "private " else "") + "constructor(${parameters.joinToString(", ") { it.toTypeScript() }})"
 
     is ExportedProperty -> {
         val keyword = when {
-            isMember -> (if (isAbstract) "abstract " else "") + (if (!mutable) "readonly " else "")
+            isMember -> (if (isStatic) "static " else "") + (if (isAbstract) "abstract " else "") + (if (!mutable) "readonly " else "")
             else -> if (mutable) "let " else "const "
         }
         keyword + name + ": " + type.toTypeScript() + ";"
+    }
+
+    is ExportedTypeAlias -> {
+        "type " + name + " = " + type.toTypeScript() + ";"
     }
 
     is ExportedClass -> {
@@ -98,4 +102,6 @@ fun ExportedType.toTypeScript(): String = when (this) {
     is ExportedType.ErrorType -> "any /*$comment*/"
     is ExportedType.TypeParameter -> name
     is ExportedType.Nullable -> "Nullable<" + baseType.toTypeScript() + ">"
+    is ExportedType.StringType -> "\"" + constant + "\""
+    is ExportedType.Union -> types.joinToString(separator = "|") { it.toTypeScript() }
 }

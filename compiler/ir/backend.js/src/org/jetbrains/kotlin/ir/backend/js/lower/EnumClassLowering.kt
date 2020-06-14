@@ -347,6 +347,7 @@ class EnumEntryInstancesLowering(val context: JsIrBackendContext) : DeclarationT
         }
 
         enumEntry.correspondingField = result
+        context.mapping.enumInstanceFieldToEntry[result] = enumEntry
 
         return result
     }

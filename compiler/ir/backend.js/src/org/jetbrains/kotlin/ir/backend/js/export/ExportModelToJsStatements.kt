@@ -25,6 +25,7 @@ class ExportModelToJsStatements(
 
     private fun generateDeclarationExport(declaration: ExportedDeclaration, namespace: JsNameRef): List<JsStatement> {
         return when (declaration) {
+            is ExportedTypeAlias -> emptyList()
             is ExportedNamespace -> {
                 val statements = mutableListOf<JsStatement>()
                 val elements = declaration.name.split(".")
@@ -67,8 +68,8 @@ class ExportModelToJsStatements(
             is ExportedConstructor -> emptyList()
 
             is ExportedProperty -> {
-                val getter = declaration.ir.getter?.let { JsNameRef(nameTables.getNameForStaticDeclaration(it)) }
-                val setter = declaration.ir.setter?.let { JsNameRef(nameTables.getNameForStaticDeclaration(it)) }
+                val getter = declaration.ir?.getter?.let { JsNameRef(nameTables.getNameForStaticDeclaration(it)) }
+                val setter = declaration.ir?.setter?.let { JsNameRef(nameTables.getNameForStaticDeclaration(it)) }
                 listOf(defineProperty(namespace, declaration.name, getter, setter).makeStmt())
             }
 

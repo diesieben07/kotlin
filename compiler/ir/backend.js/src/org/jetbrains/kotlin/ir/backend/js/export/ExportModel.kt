@@ -31,7 +31,8 @@ class ExportedFunction(
 ) : ExportedDeclaration()
 
 class ExportedConstructor(
-    val parameters: List<ExportedParameter>
+    val parameters: List<ExportedParameter>,
+    val isPrivate: Boolean = true
 ) : ExportedDeclaration()
 
 class ExportedProperty(
@@ -41,7 +42,7 @@ class ExportedProperty(
     val isMember: Boolean = false,
     val isStatic: Boolean = false,
     val isAbstract: Boolean,
-    val ir: IrProperty
+    val ir: IrProperty?
 ) : ExportedDeclaration()
 
 
@@ -58,6 +59,11 @@ class ExportedClass(
     val members: List<ExportedDeclaration>,
     val statics: List<ExportedDeclaration>,
     val ir: IrClass
+) : ExportedDeclaration()
+
+class ExportedTypeAlias(
+    val name: String,
+    val type: ExportedType
 ) : ExportedDeclaration()
 
 class ExportedParameter(
@@ -87,6 +93,8 @@ sealed class ExportedType {
         val returnType: ExportedType
     ) : ExportedType()
 
+    class Union(val types: List<ExportedType>) : ExportedType()
+    class StringType(val constant: String) : ExportedType()
     class ClassType(val name: String, val arguments: List<ExportedType>) : ExportedType()
     class TypeParameter(val name: String) : ExportedType()
     class Nullable(val baseType: ExportedType) : ExportedType()
