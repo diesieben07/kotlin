@@ -108,7 +108,6 @@ object JsExportDeclarationChecker : DeclarationChecker {
                 }
 
                 val wrongDeclaration: String? = when (descriptor.kind) {
-                    ENUM_CLASS -> "enum class"
                     INTERFACE -> if (descriptor.isExternal) null else "interface"
                     ANNOTATION_CLASS -> "annotation class"
                     else -> null

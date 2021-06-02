@@ -57,12 +57,19 @@ class ExportedClass(
     val name: String,
     val isInterface: Boolean = false,
     val isAbstract: Boolean = false,
+    val isEnum: Boolean = false,
     val superClass: ExportedType? = null,
     val superInterfaces: List<ExportedType> = emptyList(),
     val typeParameters: List<String>,
     val members: List<ExportedDeclaration>,
     val nestedClasses: List<ExportedClass>,
+    val enumOptions: List<String>,
     val ir: IrClass
+) : ExportedDeclaration()
+
+class ExportedTypeDeclaration(
+    val name: String,
+    val type: ExportedType
 ) : ExportedDeclaration()
 
 class ExportedParameter(
@@ -103,6 +110,8 @@ sealed class ExportedType {
     ) : ExportedType()
 
     class IntersectionType(val lhs: ExportedType, val rhs: ExportedType) : ExportedType()
+    class UnionType(val members: List<ExportedType>) : ExportedType()
+    class LiteralType(val literal: String) : ExportedType()
 
     fun withNullability(nullable: Boolean) =
         if (nullable) Nullable(this) else this

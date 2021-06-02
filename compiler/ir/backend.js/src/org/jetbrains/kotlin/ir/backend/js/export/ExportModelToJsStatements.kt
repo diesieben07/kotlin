@@ -93,6 +93,7 @@ class ExportModelToJsStatements(
 
                 listOf(klassExport) + staticsExport
             }
+            is ExportedTypeDeclaration -> emptyList()
         }
     }
 }

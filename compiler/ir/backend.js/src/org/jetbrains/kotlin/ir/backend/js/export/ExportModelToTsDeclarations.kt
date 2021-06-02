@@ -86,7 +86,7 @@ fun ExportedDeclaration.toTypeScript(indent: String, prefix: String = ""): Strin
 
         // If there are no exported constructors, add a private constructor to disable default one
         val privateCtorString =
-            if (!isInterface && !isAbstract && members.none { it is ExportedConstructor })
+            if (isEnum || (!isInterface && !isAbstract && members.none { it is ExportedConstructor }))
                 "$indent    private constructor();\n"
             else
                 ""
@@ -104,6 +104,10 @@ fun ExportedDeclaration.toTypeScript(indent: String, prefix: String = ""): Strin
         val klassExport = "$prefix$modifiers$keyword $name$renderedTypeParameters$superClassClause$superInterfacesClause {\n$bodyString}"
         val staticsExport = if (nestedClasses.isNotEmpty()) "\n" + ExportedNamespace(name, nestedClasses).toTypeScript(indent, prefix) else ""
         klassExport + staticsExport
+    }
+    is ExportedTypeDeclaration -> {
+        val decl = "type $name = ${type.toTypeScript(indent)}"
+        "$prefix$decl"
     }
 }
 
@@ -132,5 +136,11 @@ fun ExportedType.toTypeScript(indent: String): String = when (this) {
     }
     is ExportedType.IntersectionType -> {
         lhs.toTypeScript(indent) + " & " + rhs.toTypeScript(indent)
+    }
+    is ExportedType.UnionType -> {
+        members.joinToString(separator = " | ") { it.toTypeScript(indent) }
+    }
+    is ExportedType.LiteralType -> {
+        "\"" + literal.replace("\"", "\\\"") + "\""
     }
 }
